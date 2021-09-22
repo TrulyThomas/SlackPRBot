@@ -17,9 +17,13 @@ client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
 def GetUsersFromFile():
     with open('developers.txt', 'r') as outfile:
         return outfile.read()
+        
+fileData = eval(GetUsersFromFile())
+if(len(fileData) == 0):
+    userList = []
+else:
+    userList = fileData
 
-userList = eval(GetUsersFromFile())
-    
 def SaveUsersToFile():
     result = client.users_list()
     for member in result['members']:
