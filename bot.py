@@ -6,6 +6,7 @@ from flask import Flask
 from slackeventsapi import SlackEventAdapter
 import json
 import random
+
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 app = Flask(__name__)
@@ -13,14 +14,11 @@ slack_events_adapter = SlackEventAdapter(
     os.environ['SIGNING_SECRET'], '/slack/events', app)
 client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
 
-userList = [] 
-#GetUsersFromFile()
-
-
 def GetUsersFromFile():
-    with open('developers.json', 'r') as outfile:
-        return json.load(outfile)
+    with open('developers.txt', 'r') as outfile:
+        return outfile.read()
 
+userList = eval(GetUsersFromFile())
     
 def SaveUsersToFile():
     result = client.users_list()
@@ -77,13 +75,11 @@ if(len(userList) == 0):
 def message(payload):
     event = payload.get('event', {})
     user_id = event.get('user')
-    print(user_id)
     text = event.get('text')
     if(user_id == 'U02E0AYC8JF' and 'closed' not in text):
         assignees = PRAssignedToUsers()
-        text = f"<@{assignees[0][0]}> and <@{assignees[1][0]}> should review"
         client.chat_postMessage(
-            channel="#pr", text=text)
+            channel="#pr", text=f"<@{assignees[0][0]}> and <@{assignees[1][0]}> should review")
 
 
 if __name__ == "__main__":
