@@ -74,17 +74,14 @@ def PRAssignedToUsers():
 if(len(userList) == 0):
     SaveUsersToFile()
 
-
 @slack_events_adapter.on('message')
 def message(payload):
     event = payload.get('event', {})
-    user_id = event.get('user')
     text = event.get('text')
-    if(user_id == 'U02E0AYC8JF' and 'closed' not in text):
+    if "Pull request opened by" in text:
         assignees = PRAssignedToUsers()
         client.chat_postMessage(
             channel="#pr", text=f"<@{assignees[0][0]}> and <@{assignees[1][0]}> should review")
-
 
 if __name__ == "__main__":
     app.run(debug=True)
