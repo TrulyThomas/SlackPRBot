@@ -26,9 +26,12 @@ def message(payload):
     event = payload.get('event', {})
     text = event.get('text')
     if "Pull request opened by" in text:
-        assignees = service.PRAssignedToUsers(userList)
+        assignees = service.PRAssignedToUsers(client, userList)
         client.chat_postMessage(
             channel="#pr", text=f"<@{assignees[0]}> and <@{assignees[1]}> should review")
+    elif "!github" in text.lower():
+        github = text.replace("!github ", "")
+        print(github)
 
 if __name__ == "__main__":
     app.run(debug=True)
